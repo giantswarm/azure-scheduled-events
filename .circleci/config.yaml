@@ -1,0 +1,51 @@
+version: 2.1
+
+orbs:
+  architect: giantswarm/architect@0.9.0
+
+workflows:
+  build:
+    jobs:
+      - architect/go-build:
+          name: build-azure-scheduled-events
+          binary: azure-scheduled-events
+          filters:
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-docker:
+          context: architect
+          name: push-azure-scheduled-events-to-docker
+          image: "quay.io/giantswarm/azure-scheduled-events"
+          username_envar: "QUAY_USERNAME"
+          password_envar: "QUAY_PASSWORD"
+          requires:
+            - build-azure-scheduled-events
+          filters:
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-catalog:
+          context: architect
+          name: push-azure-scheduled-events-to-control-plane-app-catalog
+          app_catalog: "CATALOG-catalog"
+          app_catalog_test: "CATALOG-test-catalog"
+          chart: "azure-scheduled-events"
+          requires:
+            - push-azure-scheduled-events-to-docker
+          filters:
+            tags:
+              only: /^v.*/
+
+      - architect/push-to-app-collection:
+          context: architect
+          name: push-azure-scheduled-events-to-azure-app-collection
+          app_name: "azure-scheduled-events"
+          app_collection_repo: "COLLECTION-app-collection"
+          requires:
+            - push-azure-scheduled-events-to-CATALOG-app-catalog
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
