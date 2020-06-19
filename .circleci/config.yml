@@ -43,7 +43,7 @@ workflows:
           app_name: "azure-scheduled-events"
           app_collection_repo: "COLLECTION-app-collection"
           requires:
-            - push-azure-scheduled-events-to-CATALOG-app-catalog
+            - push-azure-scheduled-events-to-control-plane-app-catalog
           filters:
             branches:
               ignore: /.*/
