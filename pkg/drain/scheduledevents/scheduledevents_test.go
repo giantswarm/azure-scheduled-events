@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/azure-scheduled-events/pkg/unittest"
@@ -51,8 +52,13 @@ func Test(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	scheduledEvents := NewScheduledEvents(mockDrainer)
-	err := scheduledEvents.GetEvents(ctx, k8sclients.K8sClient(), ts.URL)
+	logger, err := micrologger.New(micrologger.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	scheduledEvents := NewScheduledEvents(mockDrainer, logger)
+	err = scheduledEvents.GetEvents(ctx, k8sclients.K8sClient(), ts.URL)
 	if err != nil {
 		t.Fatal(err)
 	}
