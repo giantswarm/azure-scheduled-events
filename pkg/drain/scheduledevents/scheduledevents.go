@@ -60,7 +60,7 @@ func fetchEvents(metadataURL string) (MetadataResponse, error) {
 	}
 	req.Header.Add("Metadata", "true")
 
-	httpClient := &http.Client{Timeout: time.Second * 10}
+	httpClient := &http.Client{Timeout: time.Second * 120}
 	res, err := httpClient.Do(req)
 	if err != nil {
 		return response, err
