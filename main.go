@@ -4,6 +4,9 @@ import (
 	"context"
 	"flag"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/giantswarm/k8sclient/v3/pkg/k8sclient"
@@ -36,6 +39,15 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		<-sigs
+		done <- true
+	}()
+
 	logger, err := micrologger.New(micrologger.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -58,9 +70,9 @@ func main() {
 		}
 	}()
 
-	// wait for 10 seconds
-	time.Sleep(10 * time.Second)
+	<-done
 	ticker.Stop()
+	logger.LogCtx(ctx, "message", "Exiting")
 }
 
 func getK8sClient(logger micrologger.Logger, k8sAddress, cafile, crtfile, keyfile, kubeconfigPath string, incluster bool) (*k8sclient.Clients, error) {
