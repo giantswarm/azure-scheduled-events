@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -53,7 +54,14 @@ func NewScheduledEvents(drainer drain.Drainer, logger micrologger.Logger) Schedu
 
 func fetchEvents(metadataURL string) (MetadataResponse, error) {
 	response := MetadataResponse{}
-	res, err := http.Get(metadataURL) // #nosec G107
+	req, err := http.NewRequest("GET", metadataURL, nil)
+	if err != nil {
+		return response, microerror.Mask(err)
+	}
+	req.Header.Add("Metadata", "true")
+
+	httpClient := &http.Client{Timeout: time.Second * 10}
+	res, err := httpClient.Do(req)
 	if err != nil {
 		return response, err
 	}
