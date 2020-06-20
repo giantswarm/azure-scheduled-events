@@ -53,7 +53,7 @@ func NewScheduledEvents(drainer drain.Drainer, logger micrologger.Logger) Schedu
 
 func fetchEvents(metadataURL string) (MetadataResponse, error) {
 	response := MetadataResponse{}
-	res, err := http.Get(metadataURL)
+	res, err := http.Get(metadataURL) // #nosec G107
 	if err != nil {
 		return response, err
 	}
