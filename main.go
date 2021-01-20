@@ -16,7 +16,7 @@ import (
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/azure-scheduled-events/pkg/drain"
-	"github.com/giantswarm/azure-scheduled-events/pkg/drain/scheduledevents"
+	"github.com/giantswarm/azure-scheduled-events/pkg/scheduledevents"
 )
 
 var (
