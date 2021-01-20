@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  architect: giantswarm/architect@0.9.0
+  architect: giantswarm/architect@1.1.1
 
 workflows:
   build:
@@ -28,8 +28,8 @@ workflows:
       - architect/push-to-app-catalog:
           context: architect
           name: push-azure-scheduled-events-to-control-plane-app-catalog
-          app_catalog: "CATALOG-catalog"
-          app_catalog_test: "CATALOG-test-catalog"
+          app_catalog: "control-plane-catalog"
+          app_catalog_test: "control-plane-test-catalog"
           chart: "azure-scheduled-events"
           requires:
             - push-azure-scheduled-events-to-docker
@@ -41,7 +41,7 @@ workflows:
           context: architect
           name: push-azure-scheduled-events-to-azure-app-collection
           app_name: "azure-scheduled-events"
-          app_collection_repo: "COLLECTION-app-collection"
+          app_collection_repo: "azure-app-collection"
           requires:
             - push-azure-scheduled-events-to-control-plane-app-catalog
           filters:
