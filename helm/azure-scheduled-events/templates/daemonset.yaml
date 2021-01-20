@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: azure-scheduled-events
+  namespace: kube-system
+  labels:
+    k8s-app: azure-scheduled-events
+spec:
+  selector:
+    matchLabels:
+      name: azure-scheduled-events
+  template:
+    metadata:
+      labels:
+        name: azure-scheduled-events
+    spec:
+      containers:
+        - name: azure-scheduled-events
+          image: quay.io/giantswarm/azure-scheduled-events
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 200m
+              memory: 200Mi

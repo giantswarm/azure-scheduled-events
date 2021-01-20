@@ -1,0 +1,13 @@
+name: azure-scheduled-events
+namespace: kube-system
+serviceType: managed
+
+project:
+  branch: "[[ .Branch ]]"
+  commit: "[[ .SHA ]]"
+
+image:
+  registry: quay.io
+  name: giantswarm/azure-scheduled-events
+  tag: v0.0.1
+  pullPolicy: IfNotPresent
