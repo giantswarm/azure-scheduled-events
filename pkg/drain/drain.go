@@ -19,7 +19,7 @@ import (
 type Drainer func(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error
 
 func Drain(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error {
-	node, err := k8sclient.CoreV1().Nodes().Get(nodename, metav1.GetOptions{})
+	node, err := k8sclient.CoreV1().Nodes().Get(ctx, nodename, metav1.GetOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
@@ -33,7 +33,7 @@ func Drain(ctx context.Context, k8sclient kubernetes.Interface, nodename string)
 }
 
 func cordon(ctx context.Context, k8sclient kubernetes.Interface, node corev1.Node) error {
-	_, err := k8sclient.CoreV1().Nodes().Patch(node.GetName(), types.StrategicMergePatchType, []byte(`{"spec":{"unschedulable":true}}`))
+	_, err := k8sclient.CoreV1().Nodes().Patch(ctx, node.GetName(), types.StrategicMergePatchType, []byte(`{"spec":{"unschedulable":true}}`), metav1.PatchOptions{}, "")
 	if apierrors.IsNotFound(err) {
 		return nil
 	}
@@ -55,7 +55,7 @@ func evictPods(ctx context.Context, k8sclient kubernetes.Interface, node corev1.
 		listOptions := metav1.ListOptions{
 			FieldSelector: fieldSelector.String(),
 		}
-		podList, err := k8sclient.CoreV1().Pods(metav1.NamespaceAll).List(listOptions)
+		podList, err := k8sclient.CoreV1().Pods(metav1.NamespaceAll).List(ctx, listOptions)
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -87,7 +87,7 @@ func evictPods(ctx context.Context, k8sclient kubernetes.Interface, node corev1.
 
 	if len(customPods) > 0 {
 		for _, pod := range customPods {
-			err := evict(k8sclient, pod)
+			err := evict(ctx, k8sclient, pod)
 			if IsCannotEvictPod(err) {
 				continue
 			} else if err != nil {
@@ -98,7 +98,7 @@ func evictPods(ctx context.Context, k8sclient kubernetes.Interface, node corev1.
 
 	if len(kubesystemPods) > 0 && len(customPods) == 0 {
 		for _, pod := range kubesystemPods {
-			err := evict(k8sclient, pod)
+			err := evict(ctx, k8sclient, pod)
 			if IsCannotEvictPod(err) {
 				continue
 			} else if err != nil {
@@ -110,7 +110,7 @@ func evictPods(ctx context.Context, k8sclient kubernetes.Interface, node corev1.
 	return nil
 }
 
-func evict(k8sclient kubernetes.Interface, pod corev1.Pod) error {
+func evict(ctx context.Context, k8sclient kubernetes.Interface, pod corev1.Pod) error {
 	eviction := &v1beta1.Eviction{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      pod.GetName(),
@@ -121,7 +121,7 @@ func evict(k8sclient kubernetes.Interface, pod corev1.Pod) error {
 		},
 	}
 
-	err := k8sclient.PolicyV1beta1().Evictions(eviction.GetNamespace()).Evict(eviction)
+	err := k8sclient.PolicyV1beta1().Evictions(eviction.GetNamespace()).Evict(ctx, eviction)
 	if IsCannotEvictPod(err) {
 		return microerror.Mask(cannotEvictPodError)
 	} else if err != nil {
