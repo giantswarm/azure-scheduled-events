@@ -15,6 +15,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/rest"
 
+	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadata"
 	"github.com/giantswarm/azure-scheduled-events/pkg/drain"
 	"github.com/giantswarm/azure-scheduled-events/pkg/scheduledevents"
 )
@@ -58,12 +59,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	events := scheduledevents.NewScheduledEvents(drain.Drain, logger)
+	azureMetadata, err := azuremetadata.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	events := scheduledevents.NewScheduledEvents(drain.Drain, logger, azureMetadata)
 
 	ticker := time.NewTicker(5 * time.Second)
 	go func() {
 		for range ticker.C {
-			err = events.GetEvents(ctx, k8sclients.K8sClient(), scheduledevents.DefaultMetadataEndpoint)
+			err = events.GetEvents(ctx, k8sclients.K8sClient())
 			if err != nil {
 				log.Fatal(err)
 			}
