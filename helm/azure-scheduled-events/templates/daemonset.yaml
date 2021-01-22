@@ -17,6 +17,11 @@ spec:
       containers:
         - name: azure-scheduled-events
           image: quay.io/giantswarm/azure-scheduled-events
+          env:
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           resources:
             limits:
               cpu: 200m

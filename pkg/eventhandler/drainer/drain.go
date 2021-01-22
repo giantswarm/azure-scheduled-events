@@ -1,4 +1,4 @@
-package drain
+package drainer
 
 import (
 	"context"
@@ -16,9 +16,7 @@ import (
 	"github.com/giantswarm/azure-scheduled-events/pkg/key"
 )
 
-type Drainer func(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error
-
-func Drain(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error {
+func drainNode(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error {
 	node, err := k8sclient.CoreV1().Nodes().Get(ctx, nodename, metav1.GetOptions{})
 	if err != nil {
 		return microerror.Mask(err)

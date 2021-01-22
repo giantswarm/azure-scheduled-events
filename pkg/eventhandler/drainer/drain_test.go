@@ -1,4 +1,4 @@
-package drain
+package drainer
 
 import (
 	"context"
@@ -43,7 +43,7 @@ func Test(t *testing.T) {
 	}
 	k8sclients := unittest.FakeK8sClient(node, pod1, pod2)
 
-	err := Drain(ctx, k8sclients.K8sClient(), nodeBeingTerminated)
+	err := drainNode(ctx, k8sclients.K8sClient(), nodeBeingTerminated)
 	if err != nil {
 		t.Fatal(err)
 	}

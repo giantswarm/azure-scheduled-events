@@ -16,8 +16,8 @@ import (
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadataclient"
-	"github.com/giantswarm/azure-scheduled-events/pkg/drain"
 	"github.com/giantswarm/azure-scheduled-events/pkg/eventhandler"
+	"github.com/giantswarm/azure-scheduled-events/pkg/eventhandler/drainer"
 )
 
 var (
@@ -28,6 +28,8 @@ var (
 	kubeconfigPath string
 	inCluster      bool
 )
+
+const k8sNodeNameEnvVarName = "K8S_NODE_NAME"
 
 func main() {
 	flag.StringVar(&k8sAddress, "k8saddress", "", "k8s address.")
@@ -64,8 +66,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	localNodeName := os.Getenv(k8sNodeNameEnvVarName)
+	if localNodeName == "" {
+		log.Fatalf("Missing required environment variable %s", k8sNodeNameEnvVarName)
+	}
+
 	eventHandlers := []eventhandler.EventHandler{
-		eventhandler.NewDrainEventHandler(drain.Drain, logger, azureMetadata, k8sclients.K8sClient()),
+		drainer.NewDrainEventHandler(logger, azureMetadata, k8sclients.K8sClient(), localNodeName),
 	}
 
 	ticker := time.NewTicker(5 * time.Second)
