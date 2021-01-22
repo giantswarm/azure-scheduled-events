@@ -17,7 +17,7 @@ import (
 
 	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadata"
 	"github.com/giantswarm/azure-scheduled-events/pkg/drain"
-	"github.com/giantswarm/azure-scheduled-events/pkg/scheduledevents"
+	"github.com/giantswarm/azure-scheduled-events/pkg/eventhandler"
 )
 
 var (
@@ -64,14 +64,25 @@ func main() {
 		log.Fatal(err)
 	}
 
-	events := scheduledevents.NewScheduledEvents(drain.Drain, logger, azureMetadata)
+	eventHandlers := []eventhandler.EventHandler{
+		eventhandler.NewDrainEventHandler(drain.Drain, logger, azureMetadata, k8sclients.K8sClient()),
+	}
 
 	ticker := time.NewTicker(5 * time.Second)
 	go func() {
 		for range ticker.C {
-			err = events.GetEvents(ctx, k8sclients.K8sClient())
+			events, err := azureMetadata.FetchEvents()
 			if err != nil {
 				log.Fatal(err)
+			}
+
+			for _, event := range events {
+				for _, handler := range eventHandlers {
+					err = handler.HandleEvent(ctx, event)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
 			}
 		}
 	}()
