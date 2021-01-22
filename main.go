@@ -15,7 +15,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/rest"
 
-	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadata"
+	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadataclient"
 	"github.com/giantswarm/azure-scheduled-events/pkg/drain"
 	"github.com/giantswarm/azure-scheduled-events/pkg/eventhandler"
 )
@@ -59,7 +59,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	azureMetadata, err := azuremetadata.New(azuremetadata.Config{})
+	azureMetadata, err := azuremetadataclient.New(azuremetadataclient.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}

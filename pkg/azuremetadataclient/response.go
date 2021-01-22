@@ -1,4 +1,4 @@
-package azuremetadata
+package azuremetadataclient
 
 type (
 	ScheduledEventResponse struct {

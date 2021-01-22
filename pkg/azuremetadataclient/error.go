@@ -1,4 +1,4 @@
-package azuremetadata
+package azuremetadataclient
 
 import "github.com/giantswarm/microerror"
 

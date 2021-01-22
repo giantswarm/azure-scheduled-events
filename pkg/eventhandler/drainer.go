@@ -7,7 +7,7 @@ import (
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadata"
+	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadataclient"
 	"github.com/giantswarm/azure-scheduled-events/pkg/drain"
 )
 
@@ -16,10 +16,10 @@ type DrainEventHandler struct {
 	K8sClient kubernetes.Interface
 	Logger    micrologger.Logger
 
-	AzureMetadataClient *azuremetadata.Client
+	AzureMetadataClient *azuremetadataclient.Client
 }
 
-func NewDrainEventHandler(drainer drain.Drainer, logger micrologger.Logger, client *azuremetadata.Client, k8sclient kubernetes.Interface) *DrainEventHandler {
+func NewDrainEventHandler(drainer drain.Drainer, logger micrologger.Logger, client *azuremetadataclient.Client, k8sclient kubernetes.Interface) *DrainEventHandler {
 	return &DrainEventHandler{
 		Drainer:   drainer,
 		K8sClient: k8sclient,
@@ -29,7 +29,7 @@ func NewDrainEventHandler(drainer drain.Drainer, logger micrologger.Logger, clie
 	}
 }
 
-func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadata.ScheduledEvent) error {
+func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadataclient.ScheduledEvent) error {
 	if event.EventType == "Terminate" && event.ResourceType == "VirtualMachine" {
 		s.Logger.LogCtx(ctx, "message", "found Terminate event, start draining the node")
 		err := s.Drainer(ctx, s.K8sClient, event.Resources[0])
