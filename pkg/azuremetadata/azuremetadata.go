@@ -28,8 +28,16 @@ type Client struct {
 	localInstanceVMName string
 }
 
-func New() (*Client, error) {
-	httpClient := &http.Client{Timeout: time.Second * 120}
+type Config struct {
+	// Optional http client to be used for HTTP requests.
+	HttpClient *http.Client
+}
+
+func New(config Config) (*Client, error) {
+	httpClient := config.HttpClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: time.Second * 120}
+	}
 
 	metadata, err := getInstanceMetadata(httpClient)
 	if err != nil {
