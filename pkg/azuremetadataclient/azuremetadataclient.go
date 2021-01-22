@@ -61,7 +61,7 @@ func (am *Client) AckEvent(eventID string) error {
 
 	resp, err := am.httpClient.Do(req)
 	if err != nil {
-		panic(err)
+		return microerror.Mask(err)
 	}
 	defer resp.Body.Close()
 
