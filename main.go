@@ -73,14 +73,15 @@ func main() {
 		for range ticker.C {
 			events, err := azureMetadata.FetchEvents()
 			if err != nil {
-				log.Fatal(err)
+				logger.Errorf(ctx, err, "Error fetching events from azure metadata service")
+				break
 			}
 
 			for _, event := range events {
 				for _, handler := range eventHandlers {
 					err = handler.HandleEvent(ctx, event)
 					if err != nil {
-						log.Fatal(err)
+						logger.Errorf(ctx, err, "Error handling event")
 					}
 				}
 			}
