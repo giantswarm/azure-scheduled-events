@@ -30,6 +30,7 @@ func NewDrainEventHandler(logger micrologger.Logger, client *azuremetadataclient
 }
 
 func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadataclient.ScheduledEvent) error {
+	s.Logger.Debugf(ctx, "Received event: %v", event)
 	if event.EventType == "Terminate" && event.ResourceType == "VirtualMachine" {
 		s.Logger.LogCtx(ctx, "message", "found Terminate event, start draining the node")
 
@@ -48,7 +49,7 @@ func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadata
 		if err != nil {
 			return microerror.Mask(err)
 		}
-		s.Logger.LogCtx(ctx, "message", "acked event")
+		s.Logger.LogCtx(ctx, "message", fmt.Sprintf("acked event %q", event.EventId))
 	}
 
 	return nil
