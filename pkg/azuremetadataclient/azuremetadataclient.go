@@ -25,9 +25,7 @@ const (
 )
 
 type Client struct {
-	httpClient *http.Client
-	logger     micrologger.Logger
-
+	httpClient          *http.Client
 	localInstanceVMName string
 }
 
