@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 )
 
 const (
@@ -24,13 +25,16 @@ const (
 )
 
 type Client struct {
-	httpClient          *http.Client
+	httpClient *http.Client
+	logger     micrologger.Logger
+
 	localInstanceVMName string
 }
 
 type Config struct {
 	// Optional http client to be used for HTTP requests.
 	HttpClient *http.Client
+	Logger     micrologger.Logger
 }
 
 func New(config Config) (*Client, error) {
@@ -43,6 +47,8 @@ func New(config Config) (*Client, error) {
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
+
+	config.Logger.Log("level", "info", "message", fmt.Sprintf("Staring AzureMetadata Client for instance %q", metadata.Compute.Name))
 
 	return &Client{
 		httpClient:          httpClient,

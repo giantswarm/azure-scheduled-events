@@ -34,8 +34,12 @@ func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadata
 
 		// Drain the node.
 		err := s.drainNode(ctx, s.K8sClient, s.LocalNodeName)
-		if err != nil {
+		if IsEvictionInProgress(err) {
+			s.Logger.LogCtx(ctx, "level", "warning", "message", "node %q not drained in time.", s.LocalNodeName)
+		} else if err != nil {
 			return microerror.Mask(err)
+		} else {
+			s.Logger.LogCtx(ctx, "level", "warning", "message", "node %q drained successfully.", s.LocalNodeName)
 		}
 
 		// ACK the event to complete termination.
@@ -43,7 +47,7 @@ func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadata
 		if err != nil {
 			return microerror.Mask(err)
 		}
-		s.Logger.LogCtx(ctx, "message", "drained node and acked event")
+		s.Logger.LogCtx(ctx, "message", "acked event")
 	}
 
 	return nil

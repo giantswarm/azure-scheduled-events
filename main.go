@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -21,12 +22,13 @@ import (
 )
 
 var (
-	k8sAddress     string
-	cafile         string
-	crtfile        string
-	keyfile        string
-	kubeconfigPath string
-	inCluster      bool
+	k8sAddress       string
+	cafile           string
+	crtfile          string
+	keyfile          string
+	kubeconfigPath   string
+	inCluster        bool
+	mainLoopInterval int
 )
 
 const k8sNodeNameEnvVarName = "K8S_NODE_NAME"
@@ -38,6 +40,7 @@ func main() {
 	flag.StringVar(&keyfile, "keyfile", "", "TLS key file.")
 	flag.StringVar(&kubeconfigPath, "kubeconfigpath", "", "kubeconfig path.")
 	flag.BoolVar(&inCluster, "incluster", true, "whether it runs in k8s cluster or not.")
+	flag.IntVar(&mainLoopInterval, "check-interval", 5, "The interval in seconds between two checks of the events")
 
 	flag.Parse()
 
@@ -71,12 +74,16 @@ func main() {
 		log.Fatalf("Missing required environment variable %s", k8sNodeNameEnvVarName)
 	}
 
+	logger.LogCtx(ctx, "level", "info", "message", fmt.Sprintf("Local Kubernetes Node Name is %q", localNodeName))
+
 	eventHandlers := []eventhandler.EventHandler{
 		drainer.NewDrainEventHandler(logger, azureMetadata, k8sclients.K8sClient(), localNodeName),
 	}
 
-	ticker := time.NewTicker(5 * time.Second)
+	interval := 5
+	ticker := time.NewTicker(time.Second * time.Duration(interval))
 	go func() {
+		logger.LogCtx(ctx, "level", "info", "message", fmt.Sprintf("Starting main loop with %d seconds interval", interval))
 		for range ticker.C {
 			events, err := azureMetadata.FetchEvents()
 			if err != nil {

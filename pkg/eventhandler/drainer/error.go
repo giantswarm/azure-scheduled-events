@@ -23,3 +23,11 @@ func IsCannotEvictPod(err error) bool {
 
 	return c == cannotEvictPodError
 }
+
+var evictionInProgressError = &microerror.Error{
+	Kind: "evictionInProgressError",
+}
+
+func IsEvictionInProgress(err error) bool {
+	return microerror.Cause(err) == evictionInProgressError
+}
