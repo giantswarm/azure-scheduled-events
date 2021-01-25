@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: azure-scheduled-events
-  namespace: kube-system
+  name: {{ include "resource.default.name"  . }}
+  namespace: {{ include "resource.default.namespace"  . }}
   labels:
-    k8s-app: azure-scheduled-events
+    {{- include "labels.common" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      name: azure-scheduled-events
+      {{- include "labels.common" . | nindent 6 }}
   template:
     metadata:
       labels:
-        name: azure-scheduled-events
+        {{- include "labels.common" . | nindent 8 }}
     spec:
       containers:
         - name: azure-scheduled-events
