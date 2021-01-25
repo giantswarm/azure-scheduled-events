@@ -1,22 +1,29 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: azure-scheduled-events
-  namespace: kube-system
+  name: {{ include "resource.default.name"  . }}
+  namespace: {{ include "resource.default.namespace"  . }}
   labels:
-    k8s-app: azure-scheduled-events
+    {{- include "labels.common" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      name: azure-scheduled-events
+      {{- include "labels.common" . | nindent 6 }}
   template:
     metadata:
       labels:
-        name: azure-scheduled-events
+        {{- include "labels.common" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ include "resource.default.name"  . }}
       containers:
         - name: azure-scheduled-events
-          image: quay.io/giantswarm/azure-scheduled-events
+          image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           resources:
             limits:
               cpu: 200m

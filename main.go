@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -15,18 +16,22 @@ import (
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/rest"
 
-	"github.com/giantswarm/azure-scheduled-events/pkg/drain"
-	"github.com/giantswarm/azure-scheduled-events/pkg/scheduledevents"
+	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadataclient"
+	"github.com/giantswarm/azure-scheduled-events/pkg/eventhandler"
+	"github.com/giantswarm/azure-scheduled-events/pkg/eventhandler/drainer"
 )
 
 var (
-	k8sAddress     string
-	cafile         string
-	crtfile        string
-	keyfile        string
-	kubeconfigPath string
-	inCluster      bool
+	k8sAddress       string
+	cafile           string
+	crtfile          string
+	keyfile          string
+	kubeconfigPath   string
+	inCluster        bool
+	mainLoopInterval int
 )
+
+const k8sNodeNameEnvVarName = "K8S_NODE_NAME"
 
 func main() {
 	flag.StringVar(&k8sAddress, "k8saddress", "", "k8s address.")
@@ -35,6 +40,7 @@ func main() {
 	flag.StringVar(&keyfile, "keyfile", "", "TLS key file.")
 	flag.StringVar(&kubeconfigPath, "kubeconfigpath", "", "kubeconfig path.")
 	flag.BoolVar(&inCluster, "incluster", true, "whether it runs in k8s cluster or not.")
+	flag.IntVar(&mainLoopInterval, "check-interval", 5, "The interval in seconds between two checks of the events")
 
 	flag.Parse()
 
@@ -58,14 +64,42 @@ func main() {
 		log.Fatal(err)
 	}
 
-	events := scheduledevents.NewScheduledEvents(drain.Drain, logger)
+	azureMetadata, err := azuremetadataclient.New(azuremetadataclient.Config{
+		Logger: logger,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	ticker := time.NewTicker(5 * time.Second)
+	localNodeName := os.Getenv(k8sNodeNameEnvVarName)
+	if localNodeName == "" {
+		log.Fatalf("Missing required environment variable %s", k8sNodeNameEnvVarName)
+	}
+
+	logger.LogCtx(ctx, "level", "info", "message", fmt.Sprintf("Local Kubernetes Node Name is %q", localNodeName))
+
+	eventHandlers := []eventhandler.EventHandler{
+		drainer.NewDrainEventHandler(logger, azureMetadata, k8sclients.K8sClient(), localNodeName),
+	}
+
+	interval := 5
+	ticker := time.NewTicker(time.Second * time.Duration(interval))
 	go func() {
+		logger.LogCtx(ctx, "level", "info", "message", fmt.Sprintf("Starting main loop with %d seconds interval", interval))
 		for range ticker.C {
-			err = events.GetEvents(ctx, k8sclients.K8sClient(), scheduledevents.DefaultMetadataEndpoint)
+			events, err := azureMetadata.FetchEvents()
 			if err != nil {
-				log.Fatal(err)
+				logger.Errorf(ctx, err, "Error fetching events from azure metadata service")
+				break
+			}
+
+			for _, event := range events {
+				for _, handler := range eventHandlers {
+					err = handler.HandleEvent(ctx, event)
+					if err != nil {
+						logger.Errorf(ctx, err, "Error handling event")
+					}
+				}
 			}
 		}
 	}()
