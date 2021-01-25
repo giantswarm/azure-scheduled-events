@@ -118,7 +118,7 @@ func (s *DrainEventHandler) evictPods(ctx context.Context, k8sclient kubernetes.
 		}
 
 		if evicted > 0 {
-			return microerror.Maskf(evictionInProgressError, "%d pods have been evicted, waiting")
+			return microerror.Maskf(evictionInProgressError, "%d pods still pending eviction, waiting", evicted)
 		}
 
 		return nil
