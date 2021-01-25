@@ -64,7 +64,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	azureMetadata, err := azuremetadataclient.New(azuremetadataclient.Config{})
+	azureMetadata, err := azuremetadataclient.New(azuremetadataclient.Config{
+		Logger: logger,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

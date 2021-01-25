@@ -41,6 +41,10 @@ func New(config Config) (*Client, error) {
 		httpClient = &http.Client{Timeout: time.Second * 120}
 	}
 
+	if config.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
+	}
+
 	metadata, err := getInstanceMetadata(httpClient)
 	if err != nil {
 		return nil, microerror.Mask(err)
