@@ -11,6 +11,19 @@ rules:
       - nodes
     verbs:
       - "get"
+      - "patch"
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - "list"
+  - apiGroups:
+      - "policy"
+    resources:
+      - evictions
+    verbs:
+      - "evict"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

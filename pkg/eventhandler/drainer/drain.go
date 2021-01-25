@@ -2,6 +2,7 @@ package drainer
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/to"
@@ -17,15 +18,20 @@ import (
 )
 
 func drainNode(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error {
+	fmt.Printf("Getting node %q \n", nodename)
 	node, err := k8sclient.CoreV1().Nodes().Get(ctx, nodename, metav1.GetOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
+	fmt.Printf("Cordoning node %q \n", nodename)
+
 	err = cordon(ctx, k8sclient, *node)
 	if err != nil {
 		return microerror.Mask(err)
 	}
+
+	fmt.Printf("Evicting pods on node %q \n", nodename)
 
 	return evictPods(ctx, k8sclient, *node)
 }
