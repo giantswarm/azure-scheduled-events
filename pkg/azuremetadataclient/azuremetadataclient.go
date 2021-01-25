@@ -18,7 +18,7 @@ const (
 	ackEventBody = `{
 	"StartRequests" : [
 		{
-			"EventId": %s
+			"EventId": "%s"
 		}
 	]
 }`
@@ -65,7 +65,7 @@ func (am *Client) AckEvent(eventID string) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Add("Metadata", "True")
+	req.Header.Add("Metadata", "true")
 
 	resp, err := am.httpClient.Do(req)
 	if err != nil {
