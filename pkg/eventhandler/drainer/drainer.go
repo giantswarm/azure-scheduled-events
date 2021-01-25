@@ -33,7 +33,7 @@ func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadata
 		s.Logger.LogCtx(ctx, "message", "found Terminate event, start draining the node")
 
 		// Drain the node.
-		err := drainNode(ctx, s.K8sClient, s.LocalNodeName)
+		err := s.drainNode(ctx, s.K8sClient, s.LocalNodeName)
 		if err != nil {
 			return microerror.Mask(err)
 		}

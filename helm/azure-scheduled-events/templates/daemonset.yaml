@@ -17,8 +17,8 @@ spec:
       serviceAccountName: {{ include "resource.default.name"  . }}
       containers:
         - name: azure-scheduled-events
-          image: quay.io/giantswarm/azure-scheduled-events
-          imagePullPolicy: Always
+          image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
           env:
             - name: K8S_NODE_NAME
               valueFrom:

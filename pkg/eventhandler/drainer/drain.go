@@ -17,22 +17,20 @@ import (
 	"github.com/giantswarm/azure-scheduled-events/pkg/key"
 )
 
-func drainNode(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error {
-	fmt.Printf("Getting node %q \n", nodename)
+func (s *DrainEventHandler) drainNode(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error {
+	s.Logger.Debugf(ctx, "message", fmt.Sprintf("Getting node %q for draining", nodename))
 	node, err := k8sclient.CoreV1().Nodes().Get(ctx, nodename, metav1.GetOptions{})
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	fmt.Printf("Cordoning node %q \n", nodename)
-
+	s.Logger.Debugf(ctx, "message", fmt.Sprintf("Cordoning node %q", nodename))
 	err = cordon(ctx, k8sclient, *node)
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	fmt.Printf("Evicting pods on node %q \n", nodename)
-
+	s.Logger.Debugf(ctx, "message", fmt.Sprintf("Evicting pods on node %q", nodename))
 	return evictPods(ctx, k8sclient, *node)
 }
 
