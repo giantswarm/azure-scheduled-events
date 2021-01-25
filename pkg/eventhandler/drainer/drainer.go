@@ -2,6 +2,7 @@ package drainer
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
@@ -35,11 +36,11 @@ func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadata
 		// Drain the node.
 		err := s.drainNode(ctx, s.K8sClient, s.LocalNodeName)
 		if IsEvictionInProgress(err) {
-			s.Logger.LogCtx(ctx, "level", "warning", "message", "node %q not drained in time.", s.LocalNodeName)
+			s.Logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("node %q not drained in time.", s.LocalNodeName))
 		} else if err != nil {
 			return microerror.Mask(err)
 		} else {
-			s.Logger.LogCtx(ctx, "level", "warning", "message", "node %q drained successfully.", s.LocalNodeName)
+			s.Logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("node %q drained successfully.", s.LocalNodeName))
 		}
 
 		// ACK the event to complete termination.
