@@ -4,7 +4,7 @@ description: A Helm chart for azure-scheduled-events
 engine: gotpl
 home: https://github.com/giantswarm/azure-scheduled-events
 icon: https://some.domain.com/logo.png
-name: azure-scheduled-events
+name: azure-scheduled-events-app
 sources:
   - https://github.com/giantswarm/azure-scheduled-events
 version: [[ .Version ]]
