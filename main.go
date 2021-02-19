@@ -90,7 +90,7 @@ func main() {
 			events, err := azureMetadata.FetchEvents()
 			if err != nil {
 				logger.Errorf(ctx, err, "Error fetching events from azure metadata service")
-				break
+				continue
 			}
 
 			for _, event := range events {
