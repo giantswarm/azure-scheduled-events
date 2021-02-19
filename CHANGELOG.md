@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Remove the `Node` from Kubernetes API server right before approving the termination event.
+
 ### Fixed
 
 - Keep looping on events if one loop errors out.
