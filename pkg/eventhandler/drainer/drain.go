@@ -23,6 +23,7 @@ func (s *DrainEventHandler) drainNode(ctx context.Context, k8sclient kubernetes.
 	node, err := k8sclient.CoreV1().Nodes().Get(ctx, nodename, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		s.Logger.Debugf(ctx, "Node %q was not found, it was probably already drained and deleted", s.LocalNodeName)
+		return nil
 	} else if err != nil {
 		return microerror.Mask(err)
 	}
