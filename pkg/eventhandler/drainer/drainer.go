@@ -40,8 +40,6 @@ func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadata
 		err := s.drainNode(ctx, s.K8sClient, s.LocalNodeName)
 		if IsEvictionInProgress(err) {
 			s.Logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("node %q not drained in time.", s.LocalNodeName))
-		} else if apierrors.IsNotFound(err) {
-			s.Logger.Debugf(ctx, "Node %q was not found, it was probably already drained and deleted", s.LocalNodeName)
 		} else if err != nil {
 			return microerror.Mask(err)
 		} else {
