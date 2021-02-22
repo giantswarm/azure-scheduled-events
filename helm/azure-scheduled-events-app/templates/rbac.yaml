@@ -12,6 +12,7 @@ rules:
     verbs:
       - "get"
       - "patch"
+      - "delete"
   - apiGroups:
       - ""
     resources:

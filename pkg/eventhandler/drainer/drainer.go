@@ -6,6 +6,8 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadataclient"
@@ -41,7 +43,16 @@ func (s *DrainEventHandler) HandleEvent(ctx context.Context, event azuremetadata
 		} else if err != nil {
 			return microerror.Mask(err)
 		} else {
-			s.Logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("node %q drained successfully.", s.LocalNodeName))
+			s.Logger.Debugf(ctx, fmt.Sprintf("node %q drained successfully.", s.LocalNodeName))
+		}
+
+		// Delete node from k8s.
+		s.Logger.Debugf(ctx, "Deleting Node %q from k8s API", s.LocalNodeName)
+		err = s.K8sClient.CoreV1().Nodes().Delete(ctx, s.LocalNodeName, v1.DeleteOptions{})
+		if apierrors.IsNotFound(err) {
+			s.Logger.Debugf(ctx, "Node %q was not found, it was probably already deleted", s.LocalNodeName)
+		} else if err != nil {
+			s.Logger.LogCtx(ctx, "level", "warning", "message", fmt.Sprintf("Error deleting node %q from Kubernetes API: %s.", s.LocalNodeName, err))
 		}
 
 		// ACK the event to complete termination.
