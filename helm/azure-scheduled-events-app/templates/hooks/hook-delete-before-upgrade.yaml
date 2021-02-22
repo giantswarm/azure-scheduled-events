@@ -1,4 +1,4 @@
-{{ $hookName := "daemonset-force-replace" -}}
+{{ $hookName := "azure-scheduled-events-daemonset-force-replace" -}}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -92,7 +92,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ $hookName }}
+      job-name: {{ $hookName }}
   policyTypes:
     - Egress
   egress:
