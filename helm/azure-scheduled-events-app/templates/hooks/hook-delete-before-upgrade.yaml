@@ -1,4 +1,4 @@
-{{ $hookName := "namespace-tagger" -}}
+{{ $hookName := "daemonset-force-replace" -}}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -81,3 +81,19 @@ spec:
               kubectl -n {{ .Release.Namespace }} delete daemonset {{ include "resource.default.name"  . }}
       restartPolicy: Never
   backoffLimit: 6
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ $hookName }}
+  labels:
+    app: {{ $hookName }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ $hookName }}
+  policyTypes:
+    - Egress
+  egress:
+    - {}
