@@ -9,3 +9,9 @@ Installation:
   V1:
     Registry:
       Domain: quay.io
+
+kubectlImage:
+  registry: quay.io
+  name: giantswarm/docker-kubectl
+  tag: 933ac043b7bec33104aac58b16849ea28bace26c
+  pullPolicy: IfNotPresent
