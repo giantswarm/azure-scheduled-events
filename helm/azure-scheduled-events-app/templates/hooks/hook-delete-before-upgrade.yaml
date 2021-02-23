@@ -98,6 +98,6 @@ spec:
             - -x
             - -c
             - >-
-              kubectl -n {{ .Release.Namespace }} delete daemonset {{ include "resource.default.name"  . }}
+              kubectl -n {{ .Release.Namespace }} delete daemonset {{ include "resource.default.name"  . }} 2>&1 || exit 0
       restartPolicy: Never
   backoffLimit: 6
