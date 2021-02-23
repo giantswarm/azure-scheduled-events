@@ -6,7 +6,7 @@ metadata:
   name: {{ $hookName }}
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook": "pre-upgrade"
     "helm.sh/hook-weight": "-20"
     "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
   labels:
@@ -27,7 +27,7 @@ metadata:
   name: {{ $hookName }}
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook": "pre-upgrade"
     "helm.sh/hook-weight": "-15"
     "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
   labels:
@@ -39,7 +39,7 @@ metadata:
   name: {{ $hookName }}
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook": "pre-upgrade"
     "helm.sh/hook-weight": "-14"
     "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
   labels:
@@ -61,7 +61,7 @@ metadata:
   labels:
     app: {{ $hookName }}
   annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook": "pre-upgrade"
     "helm.sh/hook-weight": "-13"
     "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
 spec:
@@ -79,7 +79,7 @@ metadata:
   name: {{ $hookName }}
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook": "pre-upgrade"
     "helm.sh/hook-weight": "-10"
     "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded,hook-failed"
   labels:
