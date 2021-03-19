@@ -92,7 +92,10 @@ func (s *DrainEventHandler) evictPods(ctx context.Context, k8sclient kubernetes.
 			}
 		}
 
-		evicted := 0
+		left := len(customPods) + len(kubesystemPods)
+		if left == 0 {
+			return nil
+		}
 
 		if len(customPods) > 0 {
 			for _, pod := range customPods {
@@ -102,8 +105,6 @@ func (s *DrainEventHandler) evictPods(ctx context.Context, k8sclient kubernetes.
 				} else if err != nil {
 					return microerror.Mask(err)
 				}
-
-				evicted += 1
 			}
 		}
 
@@ -115,16 +116,10 @@ func (s *DrainEventHandler) evictPods(ctx context.Context, k8sclient kubernetes.
 				} else if err != nil {
 					return microerror.Mask(err)
 				}
-
-				evicted += 1
 			}
 		}
 
-		if evicted > 0 {
-			return microerror.Maskf(evictionInProgressError, "%d pods still pending eviction, waiting", evicted)
-		}
-
-		return nil
+		return microerror.Maskf(evictionInProgressError, "%d pods still pending eviction, waiting", left)
 	}
 
 	err := backoff.RetryNotify(o, backoff.NewConstant(5*time.Minute, 10*time.Second), backoff.NewNotifier(s.Logger, ctx))
