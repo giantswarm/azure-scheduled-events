@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Ensure to wait long enough when draining a node before considering the node drained.
+
+### Changed
+
+- Change drain timeout to 15 minutes.
+
 ## [0.2.2] - 2021-02-23
 
 ### Fixed
