@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- React to `Preempt`, `Reboot` and `Redeploy` events to drain nodes properly.
+
+### Change
+
+- Use the `NotBefore` field from the event to calculate drain timeout.
+
 ## [0.3.0] - 2021-03-19
 
 ### Fixed

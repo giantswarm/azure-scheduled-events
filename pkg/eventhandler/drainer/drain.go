@@ -18,7 +18,7 @@ import (
 	"github.com/giantswarm/azure-scheduled-events/pkg/key"
 )
 
-func (s *DrainEventHandler) drainNode(ctx context.Context, k8sclient kubernetes.Interface, nodename string) error {
+func (s *DrainEventHandler) drainNode(ctx context.Context, k8sclient kubernetes.Interface, nodename string, timeout time.Duration) error {
 	s.Logger.Debugf(ctx, "Getting node %q for draining", nodename)
 	node, err := k8sclient.CoreV1().Nodes().Get(ctx, nodename, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
@@ -35,7 +35,7 @@ func (s *DrainEventHandler) drainNode(ctx context.Context, k8sclient kubernetes.
 	}
 
 	s.Logger.Debugf(ctx, "Evicting pods on node %q", nodename)
-	return s.evictPods(ctx, k8sclient, *node)
+	return s.evictPods(ctx, k8sclient, *node, timeout)
 }
 
 func cordon(ctx context.Context, k8sclient kubernetes.Interface, node corev1.Node) error {
@@ -50,7 +50,7 @@ func cordon(ctx context.Context, k8sclient kubernetes.Interface, node corev1.Nod
 	return nil
 }
 
-func (s *DrainEventHandler) evictPods(ctx context.Context, k8sclient kubernetes.Interface, node corev1.Node) error {
+func (s *DrainEventHandler) evictPods(ctx context.Context, k8sclient kubernetes.Interface, node corev1.Node, timeout time.Duration) error {
 	o := func() error {
 		var customPods []corev1.Pod
 		var kubesystemPods []corev1.Pod
@@ -122,7 +122,7 @@ func (s *DrainEventHandler) evictPods(ctx context.Context, k8sclient kubernetes.
 		return microerror.Maskf(evictionInProgressError, "%d pods still pending eviction, waiting", left)
 	}
 
-	err := backoff.RetryNotify(o, backoff.NewConstant(15*time.Minute, 10*time.Second), backoff.NewNotifier(s.Logger, ctx))
+	err := backoff.RetryNotify(o, backoff.NewConstant(timeout, 10*time.Second), backoff.NewNotifier(s.Logger, ctx))
 	if err != nil {
 		return microerror.Mask(err)
 	}

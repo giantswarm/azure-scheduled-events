@@ -98,6 +98,10 @@ func (am *Client) FetchEvents() ([]ScheduledEvent, error) {
 	var filtered []ScheduledEvent
 
 	for _, event := range response.Events {
+		// Check if event ResourceType is VirtualMachine
+		if event.ResourceType != "VirtualMachine" {
+			continue
+		}
 		// Check if event is related to the local instance.
 		for _, resource := range event.Resources {
 			if resource == am.localInstanceVMName {
