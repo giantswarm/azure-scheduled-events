@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- React to `Preempt`, `Reboot` and ` case `Redeploy` events to drain nodes properly.
+- React to `Preempt`, `Reboot` and `Redeploy` events to drain nodes properly.
 
 ### Change
 
