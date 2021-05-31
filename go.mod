@@ -11,7 +11,7 @@ require (
 	github.com/giantswarm/to v0.3.0
 	k8s.io/api v0.18.18
 	k8s.io/apiextensions-apiserver v0.18.9 // indirect
-	k8s.io/apimachinery v0.18.18
+	k8s.io/apimachinery v0.18.19
 	k8s.io/client-go v0.18.18
 	sigs.k8s.io/controller-runtime v0.6.4 // indirect
 )
