@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/giantswarm/k8sclient/v4/pkg/k8sclient"
-	"github.com/giantswarm/k8sclient/v4/pkg/k8srestconfig"
+	"github.com/giantswarm/k8sclient/v5/pkg/k8sclient"
+	"github.com/giantswarm/k8sclient/v5/pkg/k8srestconfig"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 	"k8s.io/client-go/rest"
