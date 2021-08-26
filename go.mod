@@ -3,17 +3,14 @@ module github.com/giantswarm/azure-scheduled-events
 go 1.14
 
 require (
-	github.com/giantswarm/apiextensions/v2 v2.6.2 // indirect
 	github.com/giantswarm/backoff v0.2.0
-	github.com/giantswarm/k8sclient/v4 v4.1.0
+	github.com/giantswarm/k8sclient/v5 v5.12.0
 	github.com/giantswarm/microerror v0.3.0
 	github.com/giantswarm/micrologger v0.5.0
 	github.com/giantswarm/to v0.3.0
 	k8s.io/api v0.18.19
-	k8s.io/apiextensions-apiserver v0.18.9 // indirect
 	k8s.io/apimachinery v0.18.19
 	k8s.io/client-go v0.18.19
-	sigs.k8s.io/controller-runtime v0.6.4 // indirect
 )
 
 replace (
