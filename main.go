@@ -17,18 +17,20 @@ import (
 	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/azure-scheduled-events/pkg/azuremetadataclient"
+	"github.com/giantswarm/azure-scheduled-events/pkg/collector"
 	"github.com/giantswarm/azure-scheduled-events/pkg/eventhandler"
 	"github.com/giantswarm/azure-scheduled-events/pkg/eventhandler/drainer"
 )
 
 var (
-	k8sAddress       string
-	cafile           string
-	crtfile          string
-	keyfile          string
-	kubeconfigPath   string
-	inCluster        bool
-	mainLoopInterval int
+	k8sAddress             string
+	cafile                 string
+	crtfile                string
+	keyfile                string
+	kubeconfigPath         string
+	inCluster              bool
+	mainLoopInterval       int
+	prometheusExporterPort uint
 )
 
 const k8sNodeNameEnvVarName = "K8S_NODE_NAME"
@@ -41,6 +43,7 @@ func main() {
 	flag.StringVar(&kubeconfigPath, "kubeconfigpath", "", "kubeconfig path.")
 	flag.BoolVar(&inCluster, "incluster", true, "whether it runs in k8s cluster or not.")
 	flag.IntVar(&mainLoopInterval, "check-interval", 5, "The interval in seconds between two checks of the events")
+	flag.UintVar(&prometheusExporterPort, "prometheus-exporter-listen-port", 8080, "The TCP port the Prometheus exporter should listen to. Optional. Defaults to 8080.")
 
 	flag.Parse()
 
@@ -103,6 +106,18 @@ func main() {
 			}
 		}
 	}()
+
+	// Start collector.
+	{
+		coll, err := collector.New(collector.Config{
+			Port: prometheusExporterPort,
+		})
+		if err != nil {
+			log.Fatalf("Error initializing metrics collector: %s", err)
+		}
+
+		coll.StartAsync()
+	}
 
 	<-done
 	ticker.Stop()

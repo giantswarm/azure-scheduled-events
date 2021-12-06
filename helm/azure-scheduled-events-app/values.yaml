@@ -1,6 +1,9 @@
+serviceType: managed
+
 project:
   branch: "[[ .Branch ]]"
   commit: "[[ .SHA ]]"
+
 
 image:
   name: "giantswarm/azure-scheduled-events"
@@ -15,3 +18,6 @@ kubectlImage:
   name: giantswarm/docker-kubectl
   tag: 933ac043b7bec33104aac58b16849ea28bace26c
   pullPolicy: IfNotPresent
+
+prometheusExporter:
+  port: 8080
