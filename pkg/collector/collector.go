@@ -28,5 +28,5 @@ func New(config Config) (*Collector, error) {
 
 func (c *Collector) StartAsync() {
 	http.Handle("/metrics", promhttp.Handler())
-	go http.ListenAndServe(fmt.Sprintf(":%d", c.port), nil)
+	go http.ListenAndServe(fmt.Sprintf(":%d", c.port), nil) //nolint
 }
