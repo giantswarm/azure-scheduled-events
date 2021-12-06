@@ -19,11 +19,15 @@ spec:
         - name: azure-scheduled-events
           image: "{{ .Values.Installation.V1.Registry.Domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
+          args:
+            - "--prometheus-exporter-listen-port={{ .Values.prometheusExporter.port }}"
           env:
             - name: K8S_NODE_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+          ports:
+            - containerPort: {{ .Values.prometheusExporter.port }}
           resources:
             limits:
               cpu: 200m
