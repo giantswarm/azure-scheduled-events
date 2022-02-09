@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `priorityClassName: "system-node-critical"` to Daemonset to give higher priority during scheduling.
+
 ## [0.5.0] - 2021-12-06
 
 ### Added
