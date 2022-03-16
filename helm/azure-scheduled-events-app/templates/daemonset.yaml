@@ -14,6 +14,8 @@ spec:
       labels:
         {{- include "labels.common" . | nindent 8 }}
     spec:
+      tolerations:
+      - operator: Exists
       serviceAccountName: {{ include "resource.default.name"  . }}
       priorityClassName: "system-node-critical"
       containers:
