@@ -14,7 +14,7 @@ spec:
       mode: Auto
   targetRef:
     apiVersion: apps/v1
-    kind: Deployment
+    kind: DaemonSet
     name: {{ include "resource.default.name"  . }}
   updatePolicy:
     updateMode: Auto
