@@ -1,4 +1,4 @@
-FROM alpine:3.15.4
+FROM alpine:3.18.3
 
 ADD ./azure-scheduled-events /bin/azure-scheduled-events
 
