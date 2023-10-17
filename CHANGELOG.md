@@ -7,10 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- Added required exceptions fot PSS.
-
 ## [0.8.0] - 2022-09-14
 
 ### Changed
