@@ -8,7 +8,7 @@ require (
 	github.com/giantswarm/microerror v0.4.0
 	github.com/giantswarm/micrologger v1.0.0
 	github.com/giantswarm/to v0.4.0
-	github.com/prometheus/client_golang v1.13.0
+	github.com/prometheus/client_golang v1.17.0
 	k8s.io/api v0.24.4
 	k8s.io/apimachinery v0.24.4
 	k8s.io/client-go v0.24.4
