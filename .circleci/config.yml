@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  architect: giantswarm/architect@4.34.1
+  architect: giantswarm/architect@4.35.5
 
 workflows:
   build:
@@ -13,12 +13,9 @@ workflows:
             tags:
               only: /^v.*/
 
-      - architect/push-to-docker:
+      - architect/push-to-registries:
           context: architect
-          name: push-azure-scheduled-events-to-docker
-          image: "quay.io/giantswarm/azure-scheduled-events"
-          username_envar: "QUAY_USERNAME"
-          password_envar: "QUAY_PASSWORD"
+          name: push-to-registries
           requires:
             - build-azure-scheduled-events
           filters:
@@ -32,7 +29,7 @@ workflows:
           app_catalog_test: "default-test-catalog"
           chart: "azure-scheduled-events-app"
           requires:
-            - push-azure-scheduled-events-to-docker
+            - push-to-registries
           filters:
             tags:
               only: /^v.*/
